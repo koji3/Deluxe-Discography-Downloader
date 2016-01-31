@@ -10,4 +10,4 @@ How-to:
 	2 - select artist
 	3 - select one or all albums
 	4 - ???
-	5 - Profit!s
+	5 - Profit!
