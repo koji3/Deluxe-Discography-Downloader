@@ -51,7 +51,8 @@ function buscar_discografia()
 	
 	echo -e "$verde Albums encontrados:"
 	for x in $(seq 0 $(($num_albums-1)) ) ; do
-		echo -e "$rojo $x $verde)$amarillo\t" $(cat json_temp_albums | jshon -e albums -e $x -e name -u) # TODO añadir numero de pistas del album
+		num_canc=$(cat json_temp_albums | jshon -e albums -e $x -e tracks -l)
+		echo -e "$rojo $x $verde)$amarillo\t" $(cat json_temp_albums | jshon -e albums -e $x -e name -u)" $cyanC($num_canc temas)"
 	done
 	
 	echo -e "$rojo $num_albums $verde)$magenta\tDescargar la discografía entera"
@@ -70,7 +71,7 @@ function descargar_album()
 	if [[ $1 -lt $num_albums ]] ; then
 		num_canciones=$(cat json_temp_albums | jshon -e albums -e $1 -e tracks -l)
 		nombre_album=$(cat json_temp_albums | jshon -e albums -e $1 -e name -u)
-		echo -e "$verde Descargando $azul $nombre_album"
+		echo -e "$verde Descargando $azul $nombre_album $cyanC ($num_canciones temas)"
 		mkdir -p "$nombre_artista/$nombre_album"
 		for x in $( seq 0 $(($num_canciones-1)) ) ; do
 			nombre_cancion=$(cat json_temp_albums | jshon -e albums -e $1 -e tracks -e $x -e name -u)
