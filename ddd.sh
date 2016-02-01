@@ -26,9 +26,11 @@ function buscar_artista()
 	curl -s "https://www.syotify.com/search/$1?limit=20" -H 'pragma: no-cache' -H 'accept-encoding: gzip, deflate, sdch' -H 'accept-language: es-ES,es;q=0.8' -H 'user-agent: Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.82 Safari/537.36' -H 'accept: application/json, text/plain, */*' -H 'cache-control: no-cache' -H 'authority: www.syotify.com' -H 'referer: https://www.syotify.com/new-releases' --compressed > json_temp_artistas
 	num_resultados=$(cat json_temp_artistas | jshon -e artists -l )
 	
+	echo -e "$verde Artistas encontrados:"
 	for x in $(seq 0 $(($num_resultados-1)) ) ; do
-		echo "$x) " $(cat json_temp_artistas | jshon -e artists -e $x -e name -u)
+		echo -e "$rojo $x $verde)$amarillo\t" $(cat json_temp_artistas | jshon -e artists -e $x -e name -u)
 	done
+	echo -e "$verde"
 	
 	if [[ $num_resultados == 0 ]] ; then
 		id_artista_seleccionado=0
@@ -46,12 +48,15 @@ function buscar_discografia()
 
 	curl -s 'https://www.syotify.com/get-artist?top-tracks=true' -H 'origin: https://www.syotify.com' -H 'accept-encoding: gzip, deflate' -H 'accept-language: es-ES,es;q=0.8' -H 'pragma: no-cache' -H 'user-agent: Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.82 Safari/537.36' -H 'content-type: application/json;charset=UTF-8' -H 'accept: application/json, text/plain, */*' -H 'cache-control: no-cache' -H 'authority: www.syotify.com' -H 'referer: https://www.syotify.com/search/extremoduro' --data-binary "{\"name\":\"$1\"}" --compressed > json_temp_albums
 	num_albums=$(cat json_temp_albums | jshon -e albums -l )
+	
+	echo -e "$verde Albums encontrados:"
 	for x in $(seq 0 $(($num_albums-1)) ) ; do
-		echo "$x) " $(cat json_temp_albums | jshon -e albums -e $x -e name -u)
+		echo -e "$rojo $x $verde)$amarillo\t" $(cat json_temp_albums | jshon -e albums -e $x -e name -u) # TODO añadir numero de pistas del album
 	done
 	
-	echo "$num_albums) Descargar la discografía entera"
+	echo -e "$rojo $num_albums $verde)$magenta\tDescargar la discografía entera"
 	
+	echo -e "$verde"
 	read -p "Introduce el id del album a descargar (0 - $num_albums) " id_album_seleccionado
 	descargar_album $id_album_seleccionado
 }
@@ -91,8 +96,8 @@ function descargar_album()
 function descargar_cancion()
 {
 	echo -e "$verde [ $rojo $1 $verde ] Descargando canción $amarillo $2"
-	youtube-dl -q --audio-format "mp3" --id -x "$1"
-	# Editar etiquetas id3
+	youtube-dl -q --audio-format "mp3" --id -x "https://www.youtube.com/watch?v=$1"
+	# TODO Editar etiquetas id3
 	mv $1.mp3 "$3/$2.mp3"
 }
 
